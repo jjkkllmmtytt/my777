@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>EgoIntentVQA</title>
+
+    <link href="./static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700|Kaushan+Script|Droid+Serif:400,700,400italic,700italic|Roboto+Slab:400,100,300,700" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/solid.css" integrity="sha384-VGP9aw4WtGH/uPAOseYxZ+Vz/vaTb1ehm1bwx92Fm8dTrE+3boLfF1SpAtB1z7HW" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/fontawesome.css" integrity="sha384-1rquJLNOM3ijoueaaeS5m+McXPJCGdr5HcA03/VHXxcp2kX2sUrQDmFc3jR5i/C7" crossorigin="anonymous">
+	<link rel="icon" href="./images/GES-X_logo.PNG?version=1" type="image/x-icon">
+
+    <!-- Custom styles for this template -->
+    <link href="./css/agency.css" rel="stylesheet">
+    <link rel="stylesheet" href="./static/css/bootstrap.min.css">
+    <style>
+        /* Custom styles for the carousel controls */
+        .carousel-control-prev, .carousel-control-next {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-size: 24px;
+            text-decoration: none;
+        }
+
+        .carousel-control-prev {
+            left: 20px;
+        }
+
+        .carousel-control-next {
+            right: 20px;
+        }
+        .prompt-card {
+            border: none;
+            border-radius: 14px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .prompt-card .card-header {
+            background: #f8fafc;
+            border-bottom: 1px solid #e9ecef;
+            padding: 0;
+        }
+
+        .prompt-toggle {
+            display: block;
+            width: 100%;
+            padding: 18px 22px;
+            text-align: left;
+            color: rgb(70, 70, 70);
+            font-weight: 700;
+            text-decoration: none;
+            border: none;
+            background: transparent;
+        }
+
+        .prompt-toggle:hover,
+        .prompt-toggle:focus {
+            text-decoration: none;
+            color: rgb(40, 40, 40);
+            outline: none;
+        }
+
+        .prompt-subtitle {
+            color: rgb(120, 120, 120);
+            font-size: 14px;
+            margin-top: 4px;
+            font-weight: 400;
+        }
+
+        .prompt-block {
+            background: #fbfbfc;
+            border: 1px solid #ececec;
+            border-radius: 10px;
+            padding: 16px;
+            margin-top: 15px;
+        }
+
+        .prompt-label {
+            font-weight: 700;
+            color: rgb(90, 90, 90);
+            margin-bottom: 10px;
+        }
+
+        .prompt-pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            margin: 0;
+            font-size: 14px;
+            line-height: 1.75;
+            color: #2f2f2f;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+        }
+
+        .prompt-note-box {
+            background: #f8f9fa;
+            border-left: 4px solid #9bb7d0;
+            border-radius: 8px;
+            padding: 16px 18px;
+            margin-top: 20px;
+        }
+    </style>
+    
+  </head>
+
+  <body id="page-top">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav", style = "background-color: rgba(173, 196, 212, 0.92)">
+      <div class="container">
+        <a class="navbar-brand js-scroll-trigger" href="#page-top"> <img style="width:15em;" src="./static/images/logo.png" alt="Logo"></a>
+          <!-- <p style="width:8em; font-family: 'Roboto Slab', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 15px; font-style: italic; color: white; margin-top:-27px; margin-left:3px">Toward Coherent Co-speech 3D
+          Gesture Generation in the Wild</p> -->
+        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+          <i class="fa fa-bars fa-2x" aria-hidden="true"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+          <ul class="navbar-nav text-uppercase ml-auto">
+            <li class="nav-item" style="font-size: 110%">
+              <a class="nav-link js-scroll-trigger" href="#dataset">Dataset</a>
+            </li>
+            <li class="nav-item" style="font-size: 110%">
+              <a class="nav-link js-scroll-trigger" href="#model">Model</a>
+            </li>
+            <li class="nav-item" style="font-size: 110%">
+              <a class="nav-link js-scroll-trigger" href="#prompts">Prompts</a>
+            </li>
+            <li class="nav-item" style="font-size: 110%">
+              <a class="nav-link js-scroll-trigger" href="#results">results</a>
+            </li>
+			      <li class="nav-item" style="font-size: 110%">
+              <a class="nav-link js-scroll-trigger" href="#experiments">experiments</a>
+            </li>
+
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+
+    <!-- Header -->
+    <header class="masthead">
+      <div class="container">
+        <div class="row intro-text justify-content-center" style="margin-top: 100px">
+
+        <!-- 标题 -->
+        <div class="col-12 text-center">
+          <div class="intro-lead-in">
+            <h2>EgoIntentVQA: An Intent-Aware Egocentric Visual Question Answering Benchmark</h2>
+          </div>
+        </div>
+
+        <!-- 第一张大图 -->
+        <div class="col-12 text-center" style="margin-top: 30px;">
+          <img
+            src="./static/images/Task.png"
+            alt="EgoIntentVQA overview"
+            class="img-fluid"
+            style="width: 100%; max-width: 1400px; border-radius: 8px;"
+          >
+        </div>
+
+        <!-- 图片说明，可选 -->
+        <div class="col-12 text-center" style="margin-top: 12px;">
+          <p style="color: rgb(150, 150, 150); font-size: 15px;">
+            Overview of EgoIntentVQA, including representative examples of location understanding, object recognition, navigation, text recognition, and intent-aware question answering.
+          </p>
+        </div>
+
+        <!-- 摘要 -->
+        <div class="col-lg-10 col-xl-9 text-center" style="margin-top: 25px;">
+          <p style="color: rgb(171, 171, 171); font-size: 18px; line-height: 1.8;">
+            We present <strong>EgoIntentVQA</strong>, an intent-aware egocentric visual question answering task that goes beyond scene understanding and object recognition by emphasizing the user’s underlying intention in first-person scenarios.
+            Given egocentric visual observations, the goal is to answer questions that require understanding not only what is visible, but also what the wearer is trying to do and what action should be taken next.
+            Our benchmark covers diverse question types such as object recognition, location understanding, navigation, text recognition, and intent-aware reasoning, supporting the study of more practical and human-centered egocentric VQA systems.
+          </p>
+        </div>
+
+        </div>
+      </div>
+    </header>
+
+<!-- Dataset -->
+<section class="bg-transparent" id="dataset">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12 text-center" style="margin-bottom: -30px">
+        <h2 class="section-heading" style="color: rgb(90, 90, 90); margin-top: 90px">Datasets</h2>
+        <h6 class="section-subheading" style="color: rgb(171, 171, 171); margin-bottom: 30px">
+          Dataset Analysis and Statistics
+        </h6>
+      </div>
+    </div>
+
+    <div class="row">
+      <!-- Basic informations -->
+      <div class="col-md-7">
+        <h4 class="service-heading">Basic informations</h4>
+        <ul class="text-muted">
+          <li class="text-muted">
+            We construct the <strong>EgoIntentVQA</strong> benchmark for Egocentric Intent-aware Egocentric Visual Question Answering.
+          </li>
+          <li class="text-muted">
+            The dataset contains annotated intention-aware question answer pairs and egocentric videos.
+          </li>
+          <li class="text-muted">
+            EgoIntentVQA focuses on egocentric intention-aware VQA in the complex daily scenarios.
+          </li>
+        </ul>
+      </div>
+
+      <!-- Basic statistics -->
+      <div class="col-md-5">
+        <h4 class="service-heading">Basic statistics</h4>
+        <ul class="text-muted">
+          <li class="text-muted">The EgoIntentVQA contains 2.6K egocentric video clips and 6K intention-aware QA pairs for benchmark evaluation.</li>
+          <li class="text-muted">The dataset contains 70 categories of the intention-aware target object.</li>
+        </ul>
+      </div>
+    </div>
+
+    <br>
+
+    <h5 class="section-subheading" style="text-align:left; margin-top:20px; color: rgb(100, 100, 100)">
+      Word cloud visualization of object categories and action verbs in EgoIntentVQA
+    </h5>
+
+    <div class="row justify-content-center text-center" style="margin-top: 20px;">
+      <div class="col-md-6 centered" style="padding: 1rem;">
+        <img src="./static/images/egointentvqa_object_wordcloud.png"
+             style="width: 100%; max-width: 520px;"
+             class="img-responsive img-fluid"
+             alt="Object category word cloud"/>
+        <p class="text-muted" style="margin-top: 10px;">
+          Target intent object categories
+        </p>
+      </div>
+
+      <div class="col-md-6 centered" style="padding: 1rem;">
+        <img src="./static/images/egointentvqa_verb_wordcloud.png"
+             style="width: 100%; max-width: 520px;"
+             class="img-responsive img-fluid"
+             alt="Action verb word cloud"/>
+        <p class="text-muted" style="margin-top: 10px;">
+          Action verb frequencies
+        </p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- Model -->
+<section id="model">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12 text-center" style="margin-bottom: -30px">
+        <h2 class="section-heading" style="color: rgb(90, 90, 90); margin-top: 60px">Model</h2>
+        <h6 class="section-subheading" style="color: rgb(171, 171, 171)">Our framework EIVQA and key modules </h6>
+      </div>
+    </div>
+
+  <!-- <h5 class="section-subheading" style="text-align:left; color: rgb(100, 100, 100); margin-top: 20px">Task Introduction</h5>
+    <div class="row text-center">
+      <p class="text-muted" style="text-align:left; margin-left:15px"> 
+        In our work, we focus on the task of vivid and diverse co-speech 3D gesture generation from in-the-wild human voices.<br> Details about our task are shown in the figure below:
+      </p>
+    </div>
+    <div class="col-md centered" style="padding:1rem; margin-top: 10px; ">
+      <img src="./images/tip-teaser_04_09_2025.pdf" style="width: 100%" class="img-responsive"/> 
+    </div> -->
+
+
+  </br>
+	<h5 class="section-subheading" style="text-align:left; margin-top:20px; color: rgb(100, 100, 100)">EIVQA Framework</h5>
+	    <div class="row justify-content-md-center text-center">
+      <div class="col-md centered" style="padding:1rem; margin-top:20px; ">
+        <img src="./static/images/Fig architect.png" style="width: 100%" class="img-responsive"/> 
+      </div>
+      <p class="text-muted" style="text-align:left; margin-left:15px"> 
+      <strong>Overall pipeline of EIVQA for egocentric intention-aware visual question answering</strong>: an Egocentric Intention-Aware Visual Question Answering baseline that mirrors the intention-centric nature of egocentric VQA and emphasizes intention-oriented perception and reasoning, providing a faithful and extensible baseline for evaluating future methods on the EgoIntVQA task. 
+      </p>
+      </div>
+	
+  <br>
+  <h5 class="section-subheading" style="text-align:left; margin-top:20px; color: rgb(100, 100, 100);">
+    Ego-Visual Intention Query (EVIQ)
+  </h5>
+
+  <div class="row align-items-center" style="margin-top: 20px;">
+    <!-- 左侧图片 -->
+    <div class="col-md-6 text-center">
+      <img src="./static/images/FigEVIQ.png"
+          style="width: 90%;"
+          class="img-responsive img-fluid"
+          alt="EVIQ framework"/>
+    </div>
+
+    <!-- 右侧描述 -->
+    <div class="col-md-6">
+      <p class="text-muted" style="text-align:left; font-size: 17px; line-height: 1.8;">
+        <strong>EVIQ</strong> integrates question semantics with historical intent cues in a dynamic graph
+        to model cross-frame intention trajectories.
+        It enables the model to capture how user intention evolves over time and improves
+        intent-aware reasoning in egocentric visual question answering.
+      </p>
+    </div>
+  </div>
+
+</br>
+
+</section>
+
+<section id="prompts">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12 text-center" style="margin-bottom: -20px">
+        <h2 class="section-heading" style="color: rgb(90, 90, 90); margin-top: 60px;">Prompts</h2>
+        <h6 class="section-subheading" style="color: rgb(171, 171, 171);">
+          Full prompt texts used in the supplementary material of EgoIntentVQA
+        </h6>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-10 mx-auto">
+        <p class="text-muted" style="font-size: 17px; line-height: 1.8; text-align: left; margin-top: 20px;">
+          We provide the exact prompt texts used in our supplementary material for reproducibility and reuse.
+          The prompt suite includes three parts: single-stage QA generation, LLM-based answer revision,
+          and LLM-as-a-judge evaluation.
+        </p>
+
+        <div class="prompt-note-box">
+          <p class="text-muted" style="margin: 0; text-align: left; line-height: 1.8;">
+            <strong>Reproducibility note.</strong>
+            Following the README, the full prompts are presented in plain text so that reviewers and future researchers
+            can directly reuse them in benchmark construction, answer post-editing, and semantic evaluation.
+          </p>
+        </div>
+
+        <div id="promptAccordion" style="margin-top: 30px;">
+
+          <!-- Prompt 1 -->
+          <div class="card prompt-card">
+            <div class="card-header" id="headingPrompt1">
+              <button class="btn prompt-toggle" data-toggle="collapse" data-target="#collapsePrompt1" aria-expanded="true" aria-controls="collapsePrompt1">
+                1. Single-stage QA Generation Prompt
+                <div class="prompt-subtitle">System prompt + user prompt template for intention-aware QA generation</div>
+              </button>
+            </div>
+
+            <div id="collapsePrompt1" class="collapse show" aria-labelledby="headingPrompt1" data-parent="#promptAccordion">
+              <div class="card-body">
+
+                <div class="prompt-block">
+                  <div class="prompt-label">System Prompt</div>
+                  <pre class="prompt-pre"><code>You are annotating EgoIntentVQA, an egocentric intention-aware VQA dataset built on kitchen videos.
+
+You will receive chronologically ordered frames F1...Fn from a 3–8 second first-person video clip. Generate EXACTLY 5 candidate open-ended QA pairs that require intention-aware reasoning.
+
+An intention-aware QA pair should infer the actor’s latent goal, next step, immediate purpose, tool choice, or higher-level task from temporally evolving visual evidence, rather than from a single obvious frame.
+
+Requirements:
+1. Generate exactly 5 QA pairs.
+2. Each question must be answerable from the clip itself.
+3. Focus on intention reasoning, not trivial perception (e.g., color, counting, OCR, pure object recognition, or simple location).
+4. Prefer implicit object references when possible.
+5. At least 3 QA pairs should require multi-frame temporal reasoning.
+6. The 5 pairs must be semantically diverse and non-duplicate.
+7. Do not generate yes/no or multiple-choice questions.
+8. Answers must be concise, natural, and specific, preferably 2–12 words.
+9. For each QA pair, identify the main target object, map it to an EPIC-KITCHENS object category, and provide the supporting frame range.
+10. Replace any weakly grounded, ambiguous, duplicated, or trivial pair before finalizing.
+11. Do not hallucinate off-screen actions, invisible objects, or unsupported future events.
+
+Before output, ensure that all QA pairs are visually grounded, intention-aware, mutually distinct, and taxonomy-consistent.
+
+Do not output your reasoning process.
+Return JSON only in the following schema:
+
+{
+  "qa_pairs": [
+    {
+      "video_ids": 1,
+      "question": "",
+      "answer": ""
+    }
+  ]
+}</code></pre>
+                </div>
+
+                <div class="prompt-block">
+                  <div class="prompt-label">User Prompt Template</div>
+                  <pre class="prompt-pre"><code>The input frames F1...Fn are arranged in chronological order from early to late.
+
+These frames come from an egocentric kitchen video clip. Based only on the visible evidence, generate EXACTLY 5 candidate intention-aware QA pairs.
+
+Please focus on:
+- what the actor is trying to achieve,
+- what the actor is likely to do next,
+- why the current object is being manipulated,
+- which object or tool is relevant to the next sub-goal,
+- how the current local action relates to the larger task.
+
+Prefer cases where early frames are ambiguous but later frames disambiguate the true intention, and where the answer cannot be reliably inferred from a single frame.
+
+Avoid trivial recognition questions, repeated semantics, unsupported answers, and vague expressions such as “something,” “it,” or “there.”
+
+Return JSON only in the predefined schema.</code></pre>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- Prompt 2 -->
+          <div class="card prompt-card">
+            <div class="card-header" id="headingPrompt2">
+              <button class="btn prompt-toggle collapsed" data-toggle="collapse" data-target="#collapsePrompt2" aria-expanded="false" aria-controls="collapsePrompt2">
+                2. LLM Revision Prompt
+                <div class="prompt-subtitle">Answer polishing prompt for grammar, fluency, and concise phrasing</div>
+              </button>
+            </div>
+
+            <div id="collapsePrompt2" class="collapse" aria-labelledby="headingPrompt2" data-parent="#promptAccordion">
+              <div class="card-body">
+
+                <div class="prompt-block">
+                  <div class="prompt-label">System Prompt</div>
+                  <pre class="prompt-pre"><code>You are a conservative answer editor for egocentric visual question answering outputs.
+
+Your task is ONLY to improve grammar, fluency, and surface-level commonsense phrasing.
+You must preserve the original meaning exactly.
+
+You are NOT allowed to:
+1. add a new object, tool, ingredient, destination, or person;
+2. add a new action, intention, purpose, or causal explanation;
+3. change negation, quantity, tense-dependent meaning, or temporal order;
+4. replace the answer with a more specific guess based on the question;
+5. fix a wrong prediction by hallucinating missing evidence.
+
+You ARE allowed to:
+1. fix grammar and word order;
+2. remove repetition;
+3. normalize plurality or article usage;
+4. make the answer concise and natural.
+
+If the original answer is already acceptable, copy it unchanged.
+Output only the final revised answer.</code></pre>
+                </div>
+
+                <div class="prompt-block">
+                  <div class="prompt-label">User Prompt Template</div>
+                  <pre class="prompt-pre"><code>Question: {question}
+Raw answer: {raw_answer}
+
+Please rewrite the raw answer under the following constraints:
+- preserve the same core meaning;
+- preserve the same object identity whenever possible;
+- preserve the same action verb whenever possible;
+- preserve polarity, quantity, and temporal relation;
+- keep the answer concise, preferably no more than 15 words;
+- do not introduce information not entailed by the raw answer.
+
+Return only the revised answer.</code></pre>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- Prompt 3 -->
+          <div class="card prompt-card">
+            <div class="card-header" id="headingPrompt3">
+              <button class="btn prompt-toggle collapsed" data-toggle="collapse" data-target="#collapsePrompt3" aria-expanded="false" aria-controls="collapsePrompt3">
+                3. LLM-as-a-Judge Prompt
+                <div class="prompt-subtitle">Structured semantic evaluation prompt for generated answers</div>
+              </button>
+            </div>
+
+            <div id="collapsePrompt3" class="collapse" aria-labelledby="headingPrompt3" data-parent="#promptAccordion">
+              <div class="card-body">
+
+                <div class="prompt-block">
+                  <div class="prompt-label">System Prompt</div>
+                  <pre class="prompt-pre"><code>You are a strict evaluator for answer generation.
+
+Your task is to compare a generated answer with a ground-truth answer.
+
+Judge functional-semantic correctness rather than wording overlap.
+Only use the information in the ground-truth answer and the generated answer.
+Do not rely on external knowledge except what is strictly necessary to interpret ordinary language.
+Treat implicit but necessary equivalence as correct.
+Do not reward unsupported elaboration.
+Return valid JSON only.</code></pre>
+                </div>
+
+                <div class="prompt-block">
+                  <div class="prompt-label">User Prompt Template</div>
+                  <pre class="prompt-pre"><code>Ground-truth answer: [GT]
+
+Generated answer: [PRED]
+
+Evaluate the generated answer against the ground-truth answer.
+
+Return JSON only in the following format:
+{"action_match": 0 or 1, "object_match": 0 or 1, "condition_match": 0 or 1,
+"outcome_match": 0 or 1, "unsupported_addition": 0 or 1,
+"contradiction_flag": 0 or 1, "semantic_score": integer from 1 to 5,
+"reason": "no more than 20 words"}
+
+Definitions:
+- action_match: whether the main action is preserved.
+- object_match: whether the main object or target is preserved.
+- condition_match: whether an important condition, tool, or manner is preserved explicitly or implicitly.
+- outcome_match: whether the intended result is preserved.
+- unsupported_addition: whether the generated answer adds content not supported by the ground-truth.
+- contradiction_flag: whether the generated answer conflicts with the ground-truth or is materially misleading.
+
+Scoring rubric:
+5 = semantically equivalent; same action, object, and intended result.
+4 = functionally correct; minor omission, harmless reformulation, or implicit equivalent step.
+3 = partially correct; related but missing noticeable information.
+2 = weak match; related topic but core meaning is inaccurate.
+1 = incorrect or contradictory.
+
+Important rules:
+- Implicit but necessary equivalence should be accepted.
+- Unsupported but harmless detail should not trigger contradiction_flag = 1.
+- contradiction_flag = 1 only for true conflict or materially misleading content.
+- If contradiction_flag = 1, semantic_score must be 1 or 2.
+
+Example 1:
+GT: "open the tap and rinse the knife"
+PRED: "rinse the knife under running water"
+This should normally be treated as functionally correct and not contradictory.
+
+Example 2:
+GT: "rinse the knife with water"
+PRED: "dry the knife with a towel"
+This is contradictory and should receive a low score.</code></pre>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Results -->
+<section id="results">
+  <div class="col-md-12" style="text-align:left">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12 text-center" style="margin-bottom: -50px; margin-top: -40px">
+        <h2 class="section-heading" style="color: rgb(90, 90, 90); margin-top: 90px;margin-bottom:30px">Results</h2>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="col-md-12" style="text-align:left">
+  <div class="container">
+    <h5 class="section-subheading" style="text-align:left; margin-top:50px; color: rgb(100, 100, 100)">Visual Results on EgoIntVQA Dataset</h5>
+    <div id="carouselExampleIndicators1" class="carousel slide">
+      <ol class="carousel-indicators">
+        <li data-target="#carouselExampleIndicators1" data-slide-to="0" class="active"></li>
+        <li data-target="#carouselExampleIndicators1" data-slide-to="1"></li>
+        <li data-target="#carouselExampleIndicators1" data-slide-to="2"></li>
+      </ol>
+      <div class="carousel-inner">
+        <div class="carousel-item active">
+          <div class="d-flex justify-content-center">
+            <div class="col-md-8">
+              <video controls class="d-block w-100">
+                <source src="./static/videos/video1.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+              </video>
+            </div>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <div class="d-flex justify-content-center">
+            <div class="col-md-8">
+              <video controls class="d-block w-100">
+                <source src="./static/videos/video2.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+              </video>  
+            </div>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <div class="d-flex justify-content-center">
+            <div class="col-md-8">
+              <video controls class="d-block w-100">
+                <source src="./static/videos/video3.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+              </video>
+            </div>
+          </div>
+        </div>
+            </div>
+      <a class="carousel-control-prev" href="#carouselExampleIndicators1" role="button" data-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="sr-only">Previous</span>
+      </a>
+      <a class="carousel-control-next" href="#carouselExampleIndicators1" role="button" data-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="sr-only">Next</span>
+      </a>
+    </div>
+    
+    <!-- Carousel -->
+    <h5 class="section-subheading" style="text-align:left; margin-top:50px; color: rgb(100, 100, 100)">Visual Results on EgoIntVQA Dataset</h5>
+    <div id="carouselExampleIndicators2" class="carousel slide">
+      <ol class="carousel-indicators">
+        <li data-target="#carouselExampleIndicators2" data-slide-to="0" class="active"></li>
+        <li data-target="#carouselExampleIndicators2" data-slide-to="1"></li>
+        <li data-target="#carouselExampleIndicators2" data-slide-to="2"></li>
+        <li data-target="#carouselExampleIndicators2" data-slide-to="3"></li>
+        <li data-target="#carouselExampleIndicators2" data-slide-to="4"></li>
+      </ol>
+      <div class="carousel-inner">
+        <div class="carousel-item active">
+          <div class="d-flex justify-content-center">
+            <div class="col-md-8">
+              <img src="./static/images/Figvisulisition.png" class="d-block w-100 carousel-result-img" alt="Experimental result samples of the EIVQA on the EgoIntentVQA dataset">
+            </div>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <div class="d-flex justify-content-center">
+            <div class="col-md-8">
+                <img src="./static/images/FigLLM.png" class="d-block w-100 carousel-result-img" alt="music result 1">  
+            </div>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <div class="d-flex justify-content-center">
+            <div class="col-md-8">
+              <img src="./static/images/FigAblation.png" class="d-block w-100 carousel-result-img" alt="music result 1">
+            </div>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <div class="d-flex justify-content-center">
+            <div class="col-md-8">
+              <img src="./static/images/Figfailurecase.png" class="d-block w-100 carousel-result-img" alt="music result 1">
+            </div>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <div class="d-flex justify-content-center">
+            <div class="col-md-8">
+              <img src="./static/images/Figfailurecase2.png" class="d-block w-100 carousel-result-img" alt="music result 1">
+            </div>
+          </div>
+        </div>
+            </div>
+      <a class="carousel-control-prev" href="#carouselExampleIndicators2" role="button" data-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="sr-only">Previous</span>
+      </a>
+      <a class="carousel-control-next" href="#carouselExampleIndicators2" role="button" data-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="sr-only">Next</span>
+      </a>
+    </div>
+
+    
+  </br>
+	<h5 class="section-subheading" style="text-align:center; margin-top:20px; color: rgb(100, 100, 100)">Visualizations of intention-aware reasoning on EgoIntentVQA</h5>
+	    <div class="row justify-content-md-center text-center">
+      <div class="col-md centered" style="padding:1rem; margin-top:20px; ">
+        <img src="./static/images/Figintent.png" style="width: 100%" class="img-responsive"/> 
+      </div>
+      <p class="text-muted" style="text-align:left; margin-left:15px"> 
+      <strong>
+         Representative examples of intention-aware answer prediction. Given an egocentric video clip and a question, EIVQA infers a question-conditioned latent intention from temporally evolving visual evidence and generates the corresponding answer.
+      </p>
+      </div>
+	
+  <br>
+  </div>  
+</section>
+
+<!-- Experiments -->
+ <section id="experiments">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12 text-center">
+        <h2 class="section-heading" style="color: rgb(90, 90, 90); margin-top: 60px">Experiments</h2>
+        <h6 class="section-subheading" style="color: rgb(171, 171, 171)">  
+        </h6>
+      </div>
+    </div>
+	
+    <h5 class="section-subheading" style="text-align:left; color: rgb(100, 100, 100); margin-top: 50px">Quantitative comparisons with single-task models on EgoIntentVQA.</h5>
+    <div class="row text-center">
+      <p class="text-muted" style="text-align:left; margin-left:15px"> 
+        Comparison with representative single-task baselines on EgoIntentVQA.         
+      </p>
+    
+      <img src="./static/images/single-task.png" style="width: 85%; margin-left:30px;" class="img-responsive"/> 
+    </div>
+    <p class="text-muted" style="text-align:left; margin-left:50px; margin-top: 5px;"> 
+      ↑ means the higher the better.  
+      ↓ indicates the lower the better. <br> 
+      “-” denotes that the method cannot be applied to the dataset due to the lack of text transcripts. <br> 
+    </p>
+
+    <h5 class="section-subheading" style="text-align:left; color: rgb(100, 100, 100); margin-top: 50px">Quantitative comparisons with Multi-Model Large Language Models on dataset f-Lifescene.</h5>
+    <div class="row text-center">
+      <p class="text-muted" style="text-align:left; margin-left:15px"> 
+        Comparison with Multimodal Large Language Models on EgoIntentVQA.        
+      </p>
+    
+      <img src="./static/images/MLLM.png" style="width: 85%; margin-left:30px;" class="img-responsive"/> 
+    </div>
+    <p class="text-muted" style="text-align:left; margin-left:50px; margin-top: 5px;"> 
+      ↑ means the higher the better.  
+      ↓ indicates the lower the better. <br> 
+      “-” denotes that the method cannot be applied to the dataset due to the lack of text transcripts. <br> 
+    </p>
+
+
+    <h5 class="section-subheading" style="text-align:left; color: rgb(100, 100, 100); margin-top: 50px">Quantitative comparisons on ablation analysis.</h5>
+    <div class="row text-center">
+      <!-- <p class="text-muted" style="text-align:left; margin-left:15px"> 
+        SSS: Sound Source Segmentation,AVC: Audio-Visual Caption, AVU-D: Audio-Visual Understanding with Description Only, AVU-S: Audio-Visual Understanding with Segmentation Only.        
+      </p> -->
+    
+      <img src="./static/images/ablation.png" style="width: 85%; margin-left:30px;" class="img-responsive"/> 
+    </div>
+
+  </div>
+</section>
+
+<div class="container">
+  <div class="row">
+    </div>
+  </div>
+</section>
+
+
+
+<!-- <script type="application/ld+json">
+{
+  "@context":"http://schema.org/",
+  "@type":"Dataset",
+  "name":"LU-AVS dataset",
+  "description":"First-person (egocentric) video dataset; multi-faceted non-scripted recordings in the wearers' homes, capturing all daily activities in the kitchen over multiple days. Annotations are collected using a novel live audio commentary approach.",
+  "url":"https://github.com/epic-kitchens/annotations",
+  "sameAs":"https://data.bris.ac.uk/data/dataset/3h91syskeag572hl6tvuovwv4d",
+  "citation":"Damen, Dima et al. 'Scaling Egocentric Vision: The EPIC-KITCHENS Dataset', European Conference on Computer Vision, 2018",
+  "identifier": "10.5523/bris.3h91syskeag572hl6tvuovwv4d",
+  "keywords":[
+     "Egocentric vision",
+     "Human actions",
+     "Object interactions",
+     "actions",
+     "video",
+     "kitchens",
+     "cooking",
+     "dataset",
+     "epic kitchens",
+     "epic",
+     "eccv",
+     "2022"
+  ],
+  "creator":{
+     "@type":"Organization",
+     "url": "https://epic-kitchens.github.io/",
+     "name":"EPIC Team",
+     "contactPoint":{
+        "@type":"ContactPoint",
+        "contactType": "technical support",
+        "email":"uob-epic-kitchens@bristol.ac.uk",
+        "url":"https://github.com/epic-kitchens/annotations/issues"
+     }
+  },
+  "distribution":[
+     {
+        "@type":"DataDownload",
+        "encodingFormat":"video/mp4",
+        "contentUrl":"https://data.bris.ac.uk/data/dataset/3h91syskeag572hl6tvuovwv4d"
+     },
+     {
+        "@type":"DataDownload",
+        "encodingFormat":"image/jpeg",
+        "contentUrl":"https://data.bris.ac.uk/data/dataset/3h91syskeag572hl6tvuovwv4d"
+     },
+     {
+        "@type":"DataDownload",
+        "encodingFormat":"text/csv",
+        "contentUrl":"https://github.com/epic-kitchens/annotations"
+     },
+     {
+        "@type":"DataDownload",
+        "encodingFormat":"application/octet-stream",
+        "contentUrl":"https://github.com/epic-kitchens/annotations"
+     }
+  ],
+  "license": "https://creativecommons.org/licenses/by-nc/4.0/"
+}
+</script> -->
+
+    
+<!-- Footer -->
+    <footer style="background-color:#373435ff;margin-top:90px">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4">
+            <img alt="Creative Commons License" style="border-width:1px;float:left;margin-right:15px;margin-bottom:0px;" src="http://i.creativecommons.org/l/by-nc/3.0/88x31.png"/>
+            <span class="copyright" style="color:#eee;">Copyright &copy;  (Anonymous Now):</span>
+          </div>
+          <div class="col-md-8" style="text-align:right">
+            <p style="color:#eee;">For any questions, email us at
+              <a href="mailto:#"> anonymous</a></p>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="./jquery/jquery.min.js"></script>
+    <script src="./jquery//bootstrap.bundle.min.js"></script>
+
+    <!-- Plugin JavaScript -->
+    <script src="./jquery/jquery.easing.min.js"></script>
+    <!-- Custom scripts for this template -->
+    <script src="./jquery/agency.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  </body>
+</html>
